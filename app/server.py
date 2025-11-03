@@ -9,7 +9,7 @@ app = Flask(__name__)
 gateway = Gateway()
 
 
-def proxy_handler():
+def proxy_handler(**kwargs):
     """Handler único que reenvía todas las peticiones."""
     service = gateway.get_service(request.path)
     if not service:

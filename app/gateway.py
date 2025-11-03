@@ -58,6 +58,7 @@ class Gateway:
     def get_service(self, path: str) -> str:
         """
         Obtiene el servicio que maneja una ruta.
+        Soporta rutas con parámetros como /api/analyze/<uuid>
         
         Args:
             path: Ruta de la petición
@@ -65,5 +66,37 @@ class Gateway:
         Returns:
             Nombre del servicio o None
         """
-        return self.routes.get(path)
+        if path in self.routes:
+            return self.routes[path]
+        
+        for route_pattern, service in self.routes.items():
+            if self._match_route(route_pattern, path):
+                return service
+        
+        return None
+    
+    def _match_route(self, pattern: str, path: str) -> bool:
+        """
+        Verifica si un path coincide con un patrón de ruta.
+        
+        Args:
+            pattern: Patrón de ruta (ej: /api/analyze/<uuid>)
+            path: Ruta real (ej: /api/analyze/abc-123)
+            
+        Returns:
+            True si coincide, False si no
+        """
+        pattern_parts = pattern.split('/')
+        path_parts = path.split('/')
+        
+        if len(pattern_parts) != len(path_parts):
+            return False
+        
+        for pattern_part, path_part in zip(pattern_parts, path_parts):
+            if pattern_part.startswith('<') and pattern_part.endswith('>'):
+                continue
+            if pattern_part != path_part:
+                return False
+        
+        return True
 
