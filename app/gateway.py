@@ -42,10 +42,26 @@ class Gateway:
                 timeout=300
             )
             
+            # Filter out CORS headers from backend to avoid duplication
+            # The gateway's CORS configuration will handle these
+            excluded_headers = [
+                'Access-Control-Allow-Origin',
+                'Access-Control-Allow-Methods',
+                'Access-Control-Allow-Headers',
+                'Access-Control-Allow-Credentials',
+                'Access-Control-Expose-Headers',
+                'Access-Control-Max-Age'
+            ]
+            
+            response_headers = {
+                key: value for key, value in response.headers.items()
+                if key not in excluded_headers
+            }
+            
             return Response(
                 response.content,
                 status=response.status_code,
-                headers=dict(response.headers)
+                headers=response_headers
             )
             
         except requests.exceptions.RequestException as e:

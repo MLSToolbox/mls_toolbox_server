@@ -1,11 +1,19 @@
 from flask import Flask, request
-from flask_cors import CORS, cross_origin
+from flask_cors import CORS
 from waitress import serve
 
 from gateway import Gateway
 from config import Config
 
 app = Flask(__name__)
+
+# Configure CORS once globally - do NOT use @cross_origin decorator
+CORS(app, 
+     resources={r"/*": {"origins": "*"}},
+     allow_headers=["Content-Type", "Authorization"],
+     methods=["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+     supports_credentials=False)
+
 gateway = Gateway()
 
 
@@ -21,22 +29,18 @@ for route_path in Config.ROUTES.keys():
     app.add_url_rule(
         route_path,
         endpoint=route_path,
-        view_func=cross_origin()(proxy_handler),
+        view_func=proxy_handler,  # Removed @cross_origin() decorator
         methods=['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS']
     )
 
 
 @app.route('/', methods=['GET', 'POST'])
-@cross_origin()
 def home():
     """Endpoint de verificación del gateway."""
     return 'hello from mls_toolbox_server'
 
 
 if __name__ == '__main__':
-    CORS(app, supports_credentials=True, origins=['*'])
-    app.config["CORS_HEADERS"] = ["Content-Type", "X-Requested-With", "X-CSRFToken"]
-    
     if Config.DEBUG:
         app.run(host=Config.HOST, port=Config.PORT, debug=True)
     else:
