@@ -15,7 +15,7 @@ class Config:
         "/api/get_base_editor": "code_generator",
         "/api/get_editor": "code_generator",
         "/api/get_available_editor": "code_generator",
-        "/api/upload-zip": "code_assessment",
+        "/api/upload": "code_assessment",
         "/api/analyze/<uuid>": "code_assessment",
     }
     
