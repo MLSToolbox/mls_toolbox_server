@@ -1,11 +1,11 @@
-
+import os
 
 class Config:
     """Configuración del gateway."""
     
     SERVICES = {
-        "code_generator": "http://mls_code_generator:5050",
-        "code_assessment": "http://mls_toolbox_code_assessment:5060",
+        "code_generator": os.getenv('CODE_GENERATOR_URL', 'http://mls_code_generator:5050'),
+        "code_assessment": os.getenv('CODE_ASSESSMENT_URL', 'http://mls_toolbox_code_assessment:5060'),
     }
     
     ROUTES = {
@@ -19,7 +19,8 @@ class Config:
         "/api/analyze/<uuid>": "code_assessment",
     }
     
-    HOST = "0.0.0.0"
-    PORT = 5000
-    DEBUG = False
+    # Configuración del servidor (desde variables de entorno)
+    HOST = os.getenv('HOST', '0.0.0.0')
+    PORT = int(os.getenv('PORT', '5000'))
+    DEBUG = os.getenv('DEBUG', 'False').lower() == 'true'
 
