@@ -29,3 +29,7 @@ replay_pid*
 editor.json
 fixed_editor.json
 output/*
+
+.env.local
+.env.development
+.env.production
